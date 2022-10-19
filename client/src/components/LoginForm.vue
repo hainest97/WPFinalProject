@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import router from '@/router';
+import { defineComponent } from 'vue';
 import {login} from '../stores/session'
 </script>
 
@@ -37,7 +38,7 @@ import {login} from '../stores/session'
   </div>
 </template>
 <script lang="ts">
-  export default{
+  export default defineComponent({
     data(){
       return {
         username: "",
@@ -66,6 +67,6 @@ import {login} from '../stores/session'
         }
       }
     }
-  }
+  })
 </script>
 <style scoped></style>
