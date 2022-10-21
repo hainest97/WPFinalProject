@@ -128,7 +128,7 @@ export default defineComponent({
     addWorkout() {
       var exercise_object: Exercise;
       var exc_id = parseInt(
-        (<HTMLInputElement>document.getElementById("exercise")).value
+        (document.getElementById("exercise") as HTMLInputElement).value
       );
       Exercises.forEach((item) => {
         if (exc_id === item.exercise_id) {
@@ -169,7 +169,7 @@ export default defineComponent({
       this.exercise_id = workout.exercise.exercise_id;
       this.exercise = workout.exercise.exercise;
       this.time = workout.time;
-      let x = <HTMLSelectElement>document.getElementById("exercise");
+      let x = document.getElementById("exercise") as HTMLSelectElement;
       x.value = "" + workout.exercise.exercise_id;
       // let id = workout.exercise.exercise_id;
       // for (let i = 0; i < x.options.length; i++) {
