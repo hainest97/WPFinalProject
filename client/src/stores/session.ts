@@ -95,9 +95,11 @@ Users.push(new User("Carrie Ann","Moss","cam","trinity",true,"female",69,130,55)
 Users.push(new User("Admin","Admin","admin","iruleall",true,"male",72,200,25));
 
 export const Workouts : Workout[] = [];
+// export const Workouts : Workout[] = [];
 Workouts.push(new Workout(Exercises[0],Users[0],30));
 Workouts.push(new Workout(Exercises[1],Users[0],30));
-
+Users[0].workouts.push(Workouts[0]);
+Users[0].workouts.push(Workouts[1]);
 Users[0].friends.push(Users[1]);
 Users[1].friends.push(Users[0]);
 export default session;

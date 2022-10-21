@@ -9,6 +9,9 @@ import session from "../stores/session"
       <h2 class="subtitle">
         Welcome {{session.user.firstName}} {{session.user.lastName}}!
       </h2>
+      <div v-if="session.user.isAdmin">
+        
+      </div>
     </div>
   </div>
 </template>
