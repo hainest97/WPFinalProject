@@ -88,6 +88,7 @@ export class Exercise {
 export const Exercises: Exercise [] = [];
 Exercises.push(new Exercise("Walking (3mph)",5 / 3));
 Exercises.push(new Exercise("Running (6mph)",14 / 3));
+Exercises.push(new Exercise("Swimming (Front Crawl)",2.76));
 
 export const Users : User[] = [];
 Users.push(new User("John","Wick","johnwick","ilovedogs",false,"male",72,200,58));
@@ -98,8 +99,15 @@ export const Workouts : Workout[] = [];
 // export const Workouts : Workout[] = [];
 Workouts.push(new Workout(Exercises[0],Users[0],30));
 Workouts.push(new Workout(Exercises[1],Users[0],30));
+Workouts.push(new Workout(Exercises[2],Users[1],30));
 Users[0].workouts.push(Workouts[0]);
 Users[0].workouts.push(Workouts[1]);
+Users[1].workouts.push(Workouts[2]);
 Users[0].friends.push(Users[1]);
 Users[1].friends.push(Users[0]);
 export default session;
+
+export const exercise_names : string[] = [];
+Exercises.forEach((item)=> {
+  exercise_names.push(item.exercise);
+})

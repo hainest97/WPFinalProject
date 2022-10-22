@@ -6,7 +6,6 @@ import session, {
   Workout,
   Exercise,
 } from "../stores/session";
-import LoginForm from "../components/LoginForm.vue";
 import { defineComponent } from "vue";
 </script>
 <template>
@@ -19,11 +18,38 @@ import { defineComponent } from "vue";
           <button class="button is-warning" @click="openModal">
             Add Workout
           </button>
+          <div id="delete-modal" class="modal">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+              <header class="modal-card-head">
+                <p class="modal-card-title">Are you sure?</p>
+                <button
+                  class="delete"
+                  aria-label="close"
+                  @click="closeConfirmDelete"
+                ></button>
+              </header>
+              <section class="modal-card-body">
+                <p>
+                  Are you sure you want to delete this workout? This cannot be
+                  undone
+                </p>
+              </section>
+              <footer class="modal-card-foot">
+                <button class="button is-warning" @click="deleteWorkout">
+                  Yes
+                </button>
+                <button class="button" @click="closeConfirmDelete">
+                  Cancel
+                </button>
+              </footer>
+            </div>
+          </div>
           <div id="workout-modal" class="modal">
             <div class="modal-background"></div>
             <div class="modal-card">
               <header class="modal-card-head">
-                <p class="modal-card-title">Modal title</p>
+                <p class="modal-card-title">Add/Edit Workout</p>
                 <button
                   class="delete"
                   aria-label="close"
@@ -36,11 +62,16 @@ import { defineComponent } from "vue";
                     <label class="label">Exercise</label>
                     <div class="control">
                       <div class="select">
-                        <select id="exercise" v-model="exercise">
+                        <select
+                          id="exercise"
+                          v-model="exercise"
+                          @change="calculateCalories"
+                        >
                           <option
                             v-for="exercise_item in Exercises"
                             :key="exercise_item.exercise_id"
-                            v-bind:value="exercise_item.exercise_id"
+                            :value="exercise_item"
+                            :id="'' + exercise_item.exercise_id"
                           >
                             {{ exercise_item.exercise }}
                           </option>
@@ -55,9 +86,11 @@ import { defineComponent } from "vue";
                           type="number"
                           step="1"
                           v-model="time"
+                          @change="calculateCalories"
                         />
                       </div>
                     </div>
+                    <p>Calories: {{ calories }}</p>
                   </div>
                 </form>
               </section>
@@ -94,7 +127,10 @@ import { defineComponent } from "vue";
                     class="crud-action fa-solid fa-pen-to-square mx-1"
                     @click="openModalEdit(workout)"
                   ></i>
-                  <i class="crud-action fa-solid fa-trash mx-1" @click="deleteWorkout(workout)"></i>
+                  <i
+                    class="crud-action fa-solid fa-trash mx-1"
+                    @click="openConfirmDelete(workout)"
+                  ></i>
                 </td>
               </tr>
             </tbody>
@@ -109,9 +145,9 @@ export default defineComponent({
   data() {
     return {
       workout_id: 0,
-      exercise_id: 0,
-      exercise: "",
+      exercise: Exercises[0],
       time: 0,
+      calories: 0,
     };
   },
   methods: {
@@ -121,77 +157,68 @@ export default defineComponent({
     closeModal() {
       document.getElementById("workout-modal")!.classList.remove("is-active");
       this.workout_id = 0;
-      this.exercise_id = 0;
-      this.exercise = "";
       this.time = 0;
+      this.calories = 0;
+    },
+    calculateCalories() {
+      this.calories = Math.round(
+        (this.exercise.calorie_index * session.user!.weight * this.time) / 60
+      );
     },
     addWorkout() {
-      var exercise_object: Exercise;
-      var exc_id = parseInt(
-        (document.getElementById("exercise") as HTMLInputElement).value
-      );
-      Exercises.forEach((item) => {
-        if (exc_id === item.exercise_id) {
-          exercise_object = item;
-        }
-      });
       if (this.workout_id == 0) {
-        let new_workout = new Workout(
-          exercise_object!,
-          session.user!,
-          this.time
-        );
+        let new_workout = new Workout(this.exercise, session.user!, this.time);
         Workouts.push(new_workout);
         session.user!.workouts.push(new_workout);
       } else {
         Workouts.forEach((item) => {
           if (item.workout_id === this.workout_id) {
-            item.exercise = exercise_object;
+            item.exercise = this.exercise;
             item.time = this.time;
             item.calories =
-              (session.user!.weight *
-                exercise_object!.calorie_index *
-                this.time) /
+              (session.user!.weight * this.exercise.calorie_index * this.time) /
               60;
           }
         });
       }
-      this.workout_id = 0;
-      this.exercise_id = 0;
-      this.exercise = "";
-      this.time = 0;
+      // this.workout_id = 0;
+      // this.exercise = Exercises[0];
+      // this.exercise_id = 0;
+      // this.exercise = "";
+      // this.time = 0;
+      // this.calories = 0;
+
       this.closeModal();
       return;
     },
     openModalEdit(workout: Workout) {
       this.openModal();
       this.workout_id = workout.workout_id;
-      this.exercise_id = workout.exercise.exercise_id;
-      this.exercise = workout.exercise.exercise;
+      this.exercise = workout.exercise;
       this.time = workout.time;
-      let x = document.getElementById("exercise") as HTMLSelectElement;
-      x.value = "" + workout.exercise.exercise_id;
-      // let id = workout.exercise.exercise_id;
-      // for (let i = 0; i < x.options.length; i++) {
-      //   if(parseInt(x.options[i].value)===id){
-      //     x.options[i].selected = true;
-      //     return;
-      //   }
-      // }
+      this.calories = Math.round(workout.calories);
     },
-    deleteWorkout(workout:Workout){
-      for(let i = 0; i < Workouts.length; i++){
-        if(Workouts[i].workout_id===workout.workout_id){
-          Workouts.splice(i,1);
+    openConfirmDelete(workout: Workout) {
+      this.workout_id = workout.workout_id;
+      document.getElementById("delete-modal")!.classList.add("is-active");
+    },
+    closeConfirmDelete() {
+      this.workout_id = 0;
+      document.getElementById("delete-modal")!.classList.remove("is-active");
+    },
+    deleteWorkout() {
+      for (let i = 0; i < Workouts.length; i++) {
+        if (Workouts[i].workout_id === this.workout_id) {
+          Workouts.splice(i, 1);
         }
       }
-      for(let i = 0; i < session.user!.workouts.length; i++){
-        console.log(session.user!.workouts[i].workout_id);
-        if(session.user!.workouts[i].workout_id===workout.workout_id){
-          session.user!.workouts.splice(i,1);
+      for (let i = 0; i < session.user!.workouts.length; i++) {
+        if (session.user!.workouts[i].workout_id === this.workout_id) {
+          session.user!.workouts.splice(i, 1);
         }
       }
-    }
+      this.closeConfirmDelete();
+    },
   },
 });
 </script>

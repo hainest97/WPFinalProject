@@ -4,14 +4,13 @@ import image from "../assets/logo.png"
 import { RouterLink } from "vue-router";
 import LoginBadge from "./loginBadge.vue";
 
-let isActive = ref(true);
-isActive.value = false;
+
 </script>
 <template>
   <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
     <div class="container">
       <div class="navbar-brand">
-        <router-link to="/" class="navbar-item">
+        <router-link to="/" class="navbar-item" @click="isActive=false">
           <img :src="image" />
         </router-link>
 
@@ -36,12 +35,12 @@ isActive.value = false;
         :class="{ 'is-active': isActive }"
       >
         <div class="navbar-start">
-          <router-link to="/" class="navbar-item"> Home </router-link>
+          <router-link to="/" class="navbar-item" @click="isActive=false"> Home </router-link>
 
-          <router-link to="/workouts" class="navbar-item"> Workouts </router-link>
-          <router-link to="/nutrition" class="navbar-item"> Nutrition </router-link>
+          <router-link to="/workouts" class="navbar-item" @click="isActive=false"> Workouts </router-link>
+          <router-link to="/nutrition" class="navbar-item"  @click="isActive=false"> Nutrition </router-link>
           
-          <router-link to="/friends" class="navbar-item"> Friends </router-link>
+          <router-link to="/friends" class="navbar-item" @click="isActive=false"> Friends </router-link>
           <!-- <div class="navbar-item has-dropdown is-hoverable">
           <a class="navbar-link">
             More
@@ -62,11 +61,14 @@ isActive.value = false;
         </div> -->
         </div>
 
-        <LoginBadge>
+        <LoginBadge @click="isActive=false">
         </LoginBadge>
       </div>
     </div>
   </nav>
 </template>
-
+<script lang="ts">
+export const isActive = ref(true);
+isActive.value = false;
+</script>
 <style scoped></style>
