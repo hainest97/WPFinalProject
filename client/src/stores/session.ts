@@ -92,7 +92,7 @@ Exercises.push(new Exercise("Swimming (Front Crawl)",2.76));
 
 export const Users : User[] = [];
 Users.push(new User("John","Wick","johnwick","ilovedogs",false,"male",72,200,58));
-Users.push(new User("Carrie Ann","Moss","cam","trinity",true,"female",69,130,55));
+Users.push(new User("Carrie Ann","Moss","cam","trinity",false,"female",69,130,55));
 Users.push(new User("Admin","Admin","admin","iruleall",true,"male",72,200,25));
 
 export const Workouts : Workout[] = [];

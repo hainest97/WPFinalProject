@@ -157,6 +157,7 @@ export default defineComponent({
     closeModal() {
       document.getElementById("workout-modal")!.classList.remove("is-active");
       this.workout_id = 0;
+      this.exercise = Exercises[0];
       this.time = 0;
       this.calories = 0;
     },
