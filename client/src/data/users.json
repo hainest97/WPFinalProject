@@ -1,0 +1,50 @@
+{
+  "users": [
+    {
+      "user_id": 1,
+      "firstName": "John",
+      "lastName": "Wick",
+      "username": "johnwick",
+      "password": "ilovedogs",
+      "isAdmin": false,
+      "sex": "male",
+      "height": 72,
+      "weight": 200,
+      "age": 58,
+      "friends": [2]
+      
+    },
+    {
+      "user_id": 2,
+      "firstName": "Carrie Ann",
+      "lastName": "Moss",
+      "username": "cam",
+      "password": "trinity",
+      "isAdmin": false,
+      "sex": "female",
+      "height": 69,
+      "weight": 130,
+      "age": 55,
+      "friends": [1]
+      
+    },
+    {
+      "user_id": 3,
+      "firstName": "Admin",
+      "lastName": "Admin",
+      "username": "admin",
+      "password": "iruleall",
+      "isAdmin": true,
+      "sex": "male",
+      "height": 72,
+      "weight": 200,
+      "age": 25,
+      "friends": []
+      
+    }
+    
+  ],
+  "total": 100,
+  "skip": 0,
+  "limit": 30
+}

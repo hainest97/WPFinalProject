@@ -1,6 +1,19 @@
 <script setup lang="ts">
+import { editUser } from "@/stores/users";
 import { defineComponent } from "vue";
-import session, { Users } from "../stores/session";
+import session from "../stores/session";
+
+const user = session.user!;
+function openModal() {
+      document.getElementById("editUser")!.classList.add("is-active");
+    }
+    function closeModal() {
+      document.getElementById("editUser")!.classList.remove("is-active");
+    }
+    function callEditUser(){
+      editUser(user);
+      closeModal();
+    }
 </script>
 <template>
   <div>
@@ -71,7 +84,7 @@ import session, { Users } from "../stores/session";
                 </div>
               </section>
               <footer class="modal-card-foot">
-                <button class="button is-warning" @click="editUser">Save changes</button>
+                <button class="button is-warning" @click="callEditUser">Save changes</button>
                 <button class="button" @click="closeModal">Cancel</button>
               </footer>
             </div>
@@ -114,39 +127,5 @@ import session, { Users } from "../stores/session";
     </section>
   </div>
 </template>
-<script lang="ts">
-export default defineComponent({
-  data() {
-    return {
-      user: session.user!,
-    };
-  },
-  methods: {
-    openModal() {
-      document.getElementById("editUser")!.classList.add("is-active");
-    },
-    closeModal() {
-      document.getElementById("editUser")!.classList.remove("is-active");
-    },
-    editUser(){
-      Users.forEach((user) => {
-        if(this.user.user_id===user.user_id){
-          user.firstName = this.user.firstName;
-          user.lastName = this.user.lastName;
-          user.username = this.user.username;
-          user.password  = this.user.password;
-          user.sex = this.user.sex;
-          user.height = this.user.height;
-          user.weight = this.user.weight;
-          user.age = this.user.age;
-          
-          session.user = user;
-        }
-      })
-      this.closeModal();
-    }
-  },
-});
-</script>
 
 <style scoped></style>

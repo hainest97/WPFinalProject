@@ -1,0 +1,23 @@
+{
+  "exercises": [
+    {
+      "exercise_id": 1,
+      "exercise": "Walking (3mph)",
+      "calorie_index": 1.67
+    },
+    {
+      "exercise_id": 2,
+      "exercise": "Running (3mph)",
+      "calorie_index": 4.67
+    },
+    {
+      "exercise_id": 3,
+      "exercise": "Swimming (Front Crawl)",
+      "calorie_index": 2.76
+    }
+
+  ],
+  "total": 100,
+  "skip": 0,
+  "limit": 30
+}

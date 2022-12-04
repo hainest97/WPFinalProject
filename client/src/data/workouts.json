@@ -1,0 +1,40 @@
+{
+  "workouts": [
+    {
+      "workout_id": 1,
+      "exercise": {
+        "exercise_id": 1,
+        "exercise": "Walking (3mph)",
+        "calorie_index": 1.67
+      },
+      "user_id": 1,
+      "time": 30,
+      "calories": 167
+    },
+    {
+      "workout_id": 2,
+      "exercise": {
+        "exercise_id": 2,
+        "exercise": "Running (3mph)",
+        "calorie_index": 4.67
+      },
+      "user_id": 1,
+      "time": 30,
+      "calories": 467
+    },
+    {
+      "workout_id": 3,
+      "exercise": {
+        "exercise_id": 3,
+        "exercise": "Swimming (Front Crawl)",
+        "calorie_index": 2.76
+      },
+      "user_id": 2,
+      "time": 30,
+      "calories": 179
+    }
+  ],
+  "total": 100,
+  "skip": 0,
+  "limit": 30
+}

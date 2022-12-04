@@ -4,7 +4,8 @@ import image from "../assets/logo.png"
 import { RouterLink } from "vue-router";
 import LoginBadge from "./loginBadge.vue";
 
-
+const isActive = ref(true);
+isActive.value = false;
 </script>
 <template>
   <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
@@ -67,8 +68,4 @@ import LoginBadge from "./loginBadge.vue";
     </div>
   </nav>
 </template>
-<script lang="ts">
-export const isActive = ref(true);
-isActive.value = false;
-</script>
 <style scoped></style>

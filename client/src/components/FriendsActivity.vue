@@ -1,13 +1,18 @@
 <script setup lang="ts">
-import { defineComponent } from "vue";
 import session from "../stores/session";
+import { getFriends } from "@/stores/users";
+import { getFriendsWorkouts } from "../stores/workouts"
+import { reactive } from "vue";
+
+const Friends = reactive(getFriends(session.user!.friends));
+const Workouts = reactive(getFriendsWorkouts(session.user!.friends));
 </script>
 <template>
   <div class="columns is-mobile is-centered mt-5">
     <h1 class="title">Your Friends Activity</h1>
   </div>
-  <div v-for="friend in session.user!.friends">
-    <div v-for="workout in friend.workouts">
+  <div v-for="friend in Friends">
+    <div v-for="workout in Workouts.filter((workout) => workout.user_id === friend.user_id)">
       <section>
         <div class="columns is-mobile is-centered mb-3">
           <div

@@ -1,7 +1,30 @@
 <script setup lang="ts">
 import router from "@/router";
-import { defineComponent } from "vue";
+import { ref } from "vue";
 import { login } from "../stores/session";
+
+let username = ref("");
+let password = ref("");
+let errMessage = ref("");
+
+function onSubmit(e: any) {
+  e.preventDefault();
+  if (username.value==="") {
+    errMessage.value = "Please enter a username";
+    return;
+  }
+  if (password.value ==="") {
+    errMessage.value = "Please enter a password";
+    return;
+  }
+  errMessage.value = login(username.value, password.value);
+  password.value = "";
+  if (errMessage.value === "") {
+    username.value = "";
+    password.value = "";
+    router.push("/account");
+  }
+}
 </script>
 
 <template>
@@ -42,35 +65,4 @@ import { login } from "../stores/session";
     </div>
   </div>
 </template>
-<script lang="ts">
-export default defineComponent({
-  data() {
-    return {
-      username: "",
-      password: "",
-      errMessage: "",
-    };
-  },
-  methods: {
-    onSubmit(e: any) {
-      e.preventDefault();
-      if (!this.username) {
-        this.errMessage = "Please enter a username";
-        return;
-      }
-      if (!this.password) {
-        this.errMessage = "Please enter a password";
-        return;
-      }
-      this.errMessage = login(this.username, this.password);
-      this.password = "";
-      if (this.errMessage == "") {
-        this.username = "";
-        this.password = "";
-        router.push("/account");
-      }
-    },
-  },
-});
-</script>
 <style scoped></style>

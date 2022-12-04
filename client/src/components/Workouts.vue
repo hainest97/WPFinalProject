@@ -1,12 +1,63 @@
 <script setup lang="ts">
-import session, {
-  Users,
-  Workouts,
-  Exercises,
-  Workout,
-  Exercise,
-} from "../stores/session";
-import { defineComponent } from "vue";
+import { session } from "../stores/session";
+import Workouts, {
+  addWorkout,
+  editWorkout,
+  deleteWorkout,
+  type Workout,
+} from "../stores/workouts";
+import Exercises from "../stores/exercises";
+import { ref } from "vue";
+
+let defaultWorkout = {
+  workout_id: 0,
+  exercise: Exercises[0],
+  user_id: session.user!.user_id,
+  time: 0,
+  calories: 0,
+};
+let currentWorkout = ref(defaultWorkout);
+
+function openModal() {
+  document.getElementById("workout-modal")!.classList.add("is-active");
+}
+function closeModal() {
+  document.getElementById("workout-modal")!.classList.remove("is-active");
+  currentWorkout.value = defaultWorkout;
+}
+function calculateCalories() {
+  currentWorkout.value!.calories = Math.round(
+    (currentWorkout.value!.exercise.calorie_index *
+      session.user!.weight *
+      currentWorkout.value!.time) /
+      60
+  );
+}
+function callAddWorkout() {
+  if (currentWorkout.value.workout_id == 0) {
+    addWorkout(currentWorkout.value);
+  } else {
+    editWorkout(currentWorkout.value);
+  }
+  closeModal();
+  return;
+}
+function openModalEdit(workout: Workout) {
+  currentWorkout.value = workout;
+  document.getElementById("workout-modal")!.classList.add("is-active");
+}
+function openConfirmDelete(workout: Workout) {
+  currentWorkout.value = workout;
+  document.getElementById("delete-modal")!.classList.add("is-active");
+}
+function closeConfirmDelete() {
+  currentWorkout.value = defaultWorkout;
+  document.getElementById("delete-modal")!.classList.remove("is-active");
+}
+function callDeleteWorkout() {
+  deleteWorkout(currentWorkout.value);
+  closeConfirmDelete();
+}
 </script>
 <template>
   <div>
@@ -36,7 +87,7 @@ import { defineComponent } from "vue";
                 </p>
               </section>
               <footer class="modal-card-foot">
-                <button class="button is-warning" @click="deleteWorkout">
+                <button class="button is-warning" @click="callDeleteWorkout">
                   Yes
                 </button>
                 <button class="button" @click="closeConfirmDelete">
@@ -64,7 +115,7 @@ import { defineComponent } from "vue";
                       <div class="select">
                         <select
                           id="exercise"
-                          v-model="exercise"
+                          v-model="currentWorkout.exercise"
                           @change="calculateCalories"
                         >
                           <option
@@ -85,17 +136,17 @@ import { defineComponent } from "vue";
                           class="input"
                           type="number"
                           step="1"
-                          v-model="time"
+                          v-model="currentWorkout.time"
                           @change="calculateCalories"
                         />
                       </div>
                     </div>
-                    <p>Calories: {{ calories }}</p>
+                    <p>Calories: {{ currentWorkout.calories }}</p>
                   </div>
                 </form>
               </section>
               <footer class="modal-card-foot">
-                <button class="button is-warning" @click="addWorkout">
+                <button class="button is-warning" @click="callAddWorkout">
                   Save changes
                 </button>
                 <button class="button" @click="closeModal">Cancel</button>
@@ -115,10 +166,7 @@ import { defineComponent } from "vue";
               </tr>
             </thead>
             <tbody>
-              <tr
-                v-for="workout in session.user!.workouts"
-                :key="workout.workout_id"
-              >
+              <tr v-for="workout in Workouts" :key="workout.workout_id">
                 <td>{{ workout.exercise.exercise }}</td>
                 <td>{{ workout.time }}</td>
                 <td>{{ Math.round(workout.calories) }}</td>
@@ -140,89 +188,6 @@ import { defineComponent } from "vue";
     </section>
   </div>
 </template>
-<script lang="ts">
-export default defineComponent({
-  data() {
-    return {
-      workout_id: 0,
-      exercise: Exercises[0],
-      time: 0,
-      calories: 0,
-    };
-  },
-  methods: {
-    openModal() {
-      document.getElementById("workout-modal")!.classList.add("is-active");
-    },
-    closeModal() {
-      document.getElementById("workout-modal")!.classList.remove("is-active");
-      this.workout_id = 0;
-      this.exercise = Exercises[0];
-      this.time = 0;
-      this.calories = 0;
-    },
-    calculateCalories() {
-      this.calories = Math.round(
-        (this.exercise.calorie_index * session.user!.weight * this.time) / 60
-      );
-    },
-    addWorkout() {
-      if (this.workout_id == 0) {
-        let new_workout = new Workout(this.exercise, session.user!, this.time);
-        Workouts.push(new_workout);
-        session.user!.workouts.push(new_workout);
-      } else {
-        Workouts.forEach((item) => {
-          if (item.workout_id === this.workout_id) {
-            item.exercise = this.exercise;
-            item.time = this.time;
-            item.calories =
-              (session.user!.weight * this.exercise.calorie_index * this.time) /
-              60;
-          }
-        });
-      }
-      // this.workout_id = 0;
-      // this.exercise = Exercises[0];
-      // this.exercise_id = 0;
-      // this.exercise = "";
-      // this.time = 0;
-      // this.calories = 0;
-
-      this.closeModal();
-      return;
-    },
-    openModalEdit(workout: Workout) {
-      this.openModal();
-      this.workout_id = workout.workout_id;
-      this.exercise = workout.exercise;
-      this.time = workout.time;
-      this.calories = Math.round(workout.calories);
-    },
-    openConfirmDelete(workout: Workout) {
-      this.workout_id = workout.workout_id;
-      document.getElementById("delete-modal")!.classList.add("is-active");
-    },
-    closeConfirmDelete() {
-      this.workout_id = 0;
-      document.getElementById("delete-modal")!.classList.remove("is-active");
-    },
-    deleteWorkout() {
-      for (let i = 0; i < Workouts.length; i++) {
-        if (Workouts[i].workout_id === this.workout_id) {
-          Workouts.splice(i, 1);
-        }
-      }
-      for (let i = 0; i < session.user!.workouts.length; i++) {
-        if (session.user!.workouts[i].workout_id === this.workout_id) {
-          session.user!.workouts.splice(i, 1);
-        }
-      }
-      this.closeConfirmDelete();
-    },
-  },
-});
-</script>
 <style scoped>
 .crud-action:hover {
   color: blue;
