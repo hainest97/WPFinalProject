@@ -1,24 +1,31 @@
-import data from '../data/exercises.json';
 import { reactive } from 'vue';
+import { api } from './session';
 
-const Exercises = reactive(getExercises());
+const PATCH = 'PATCH';
+const DELETE = 'DELETE';
+
+const Exercises = reactive([] as Exercise[]);
+getExercises().then((x)=>Exercises.push(...x));
 
 export function getExercises(){
-  return data.exercises as Exercise[];
+  return api<Exercise[]>('exercises');
 }
 export function getExercise(exercise_id: number){
-  return data.exercises.find((exercise) => exercise.exercise_id = exercise_id) as Exercise;
+  return api<Exercise>(`exercises/${exercise_id}`);
 }
 export function addExercise(paramExercise: Exercise){
   Exercises.push(paramExercise);
+  return api<Exercise>('exercises',{exercise: paramExercise});
 }
 export function editExercise(paramExercise: Exercise){
   const i = Exercises.findIndex((Exercise) => Exercise.exercise_id === paramExercise.exercise_id);
   Exercises[i] = paramExercise;
+  return api<Exercise>('exercises',{exercise: paramExercise},PATCH);
 }
 export function deleteExercise(paramExercise: Exercise){
   const i = Exercises.findIndex((Exercise) => Exercise.exercise_id === paramExercise.exercise_id);
   Exercises.splice(i,1);
+  return api<Exercise>('exercises',{exercise: paramExercise},DELETE);
 }
 export interface Root {
   exercises: Exercise[]

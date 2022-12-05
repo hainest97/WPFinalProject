@@ -1,27 +1,36 @@
+import session, { api } from './session';
 import { reactive } from 'vue';
-import data from '../data/users.json';
 
-const Users = reactive(getUsers());
+const PATCH = 'PATCH';
+const DELETE = 'DELETE';
+
+const Users = reactive([] as User[]);
+getUsers().then((data) => Users.push(...data));
+
 export function getUsers(){
-  return data.users as User[];
+  return api<User[]>('users');
 }
-export function getFriends(ids: number[]){
- return data.users.filter((user) => ids.includes(user.user_id)) as User[];
+export function getFriends(){
+ return api<User[]>(`users/friends/${session.user?.user_id}`);
 }
 export function getUser(username: string , password: string){
-  return data.users.find((user)=> user.username === username && user.password === password) as User;
+  return api<User>('users/login',{username: username, password: password});
 }
 export function addUser(paramUser: User){
+  paramUser.user_id = Users[Users.length-1].user_id + 1;
   Users.push(paramUser);
+  return api<User>('users',{user: paramUser});
 }
 export function editUser(paramUser: User){
   const i = Users.findIndex((user) => user.user_id === paramUser.user_id);
   Users[i] = paramUser;
+  return api<User>('users',{user: paramUser},PATCH);
 }
 
 export function deleteUser(paramUser: User){
   const i = Users.findIndex((user) => user.user_id === paramUser.user_id);
   Users.splice(i,1);
+  return api<User>('users',{user: paramUser},DELETE);
 }
 
 export interface Root {

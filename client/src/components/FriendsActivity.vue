@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import session from "../stores/session";
-import { getFriends } from "@/stores/users";
-import { getFriendsWorkouts } from "../stores/workouts"
+import { getFriends, type User } from "@/stores/users";
+import { getFriendsWorkouts, type Workout } from "../stores/workouts"
 import { reactive } from "vue";
 
-const Friends = reactive(getFriends(session.user!.friends));
-const Workouts = reactive(getFriendsWorkouts(session.user!.friends));
+const Friends = reactive([] as User[]);
+getFriends().then((x) => Friends.push(...x));
+const Workouts = reactive([] as Workout[]);
+getFriendsWorkouts().then((x) => Workouts.push(...x));
 </script>
 <template>
   <div class="columns is-mobile is-centered mt-5">

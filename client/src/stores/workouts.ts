@@ -1,30 +1,36 @@
-import data from '../data/workouts.json';
+
 import { reactive } from 'vue';
-import { session } from './session';
+import session, { api } from './session';
 import type { Exercise } from './exercises';
 
-const Workouts = reactive(getUserWorkouts(session.user!.user_id));
+const PATCH = 'PATCH';
+const DELETE = 'DELETE';
 
-export function getUserWorkouts(user_id: number){
-  return data.workouts.filter((workout) => workout.user_id === user_id) as Workout[];
+export const Workouts = reactive([] as Workout[]);
+
+export function getUserWorkouts(){
+  return api<Workout[]>(`workouts/myWorkouts/${session.user?.user_id}`);
 }
-export function getFriendsWorkouts(user_ids: number[]){
-  return data.workouts.filter((workout) => user_ids.includes(workout.user_id)) as Workout[];
+export function getFriendsWorkouts(){
+  return api<Workout[]>(`workouts/friendsWorkouts/${session.user?.user_id}`);
 }
 export function getWorkout(workout_id: number){
-  return data.workouts.find((workout) => workout.workout_id === workout_id) as Workout;
+  return api<Workout>(`workouts/${workout_id}`);
 }
 export function addWorkout(paramWorkout: Workout){
   paramWorkout.workout_id = Workouts[Workouts.length-1].workout_id + 1;
   Workouts.push(paramWorkout);
+  return api<Workout>('workouts',{workout: paramWorkout});
 }
 export function editWorkout(paramWorkout: Workout){
   const i = Workouts.findIndex((workout) => workout.workout_id === paramWorkout.workout_id);
   Workouts[i] = paramWorkout;
+  return api<Workout>('workouts',{workout: paramWorkout},PATCH);
 }
 export function deleteWorkout(paramWorkout: Workout){
   const i = Workouts.findIndex((workout) => workout.workout_id === paramWorkout.workout_id);
   Workouts.splice(i,1);
+  return api<Workout>('workouts',{workout: paramWorkout},DELETE);
 }
 
 

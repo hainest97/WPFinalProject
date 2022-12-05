@@ -18,11 +18,11 @@ function callEditUser() {
 }
 function openConfirmDelete(user: User) {
   currentUser.value = user;
-  document.getElementById("delete-modal")!.classList.add("is-active");
+  document.getElementById("delete-user-modal")!.classList.add("is-active");
 }
 function closeConfirmDelete() {
   currentUser.value = Users[0];
-  document.getElementById("delete-modal")!.classList.remove("is-active");
+  document.getElementById("delete-user-modal")!.classList.remove("is-active");
 }
 function callDeleteUser(){
   deleteUser(currentUser.value!);

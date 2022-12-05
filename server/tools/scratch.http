@@ -1,0 +1,18 @@
+###
+POST http://127.0.0.1:3000/api/v1/users/login
+Content-Type: application/json
+
+{
+  "username":"johnwick",
+  "password":"ilovedogs"
+}
+
+###
+http://127.0.0.1:3000/api/v1/workouts/friendsWorkouts/1
+
+###
+http://127.0.0.1:3000/api/v1/users/friends/1
+
+###
+http://127.0.0.1:3000/api/v1/workouts/myWorkouts/1
+
