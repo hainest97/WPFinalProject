@@ -4,29 +4,42 @@ const users = require('../models/users');
 const app = express.Router();
 
 app
-  .get('/', (req, res) => {
-    res.status(200).send(users.getUsers());
+  .get('/', (req, res, next) => {
+    users.getUsers()
+    .then(x=>res.status(200).send(x))
+    .catch(next);
   })
-  .get('/friends/:userId', (req, res) => {
-    res.status(200).send(users.getFriends(users.getUserById(+req.params.userId)?.friends));
+  .get('/friends/:userId', (req, res, next) => {
+    users.getUserById(+req.params.userId)
+    .then((x)=>users.getFriends(x?.friends)
+    
+    .then((y)=>res.status(200).send(y)))
+    .catch(next);
   })
-  .post('/login', (req, res) => {
-    res.status(200).send(users.getUser(req.body.username, req.body.password));
-    // if (user) {
-    //   res.status(200).send(user);
-    // }
-    // else {
-    //   res.status(200).send("User not found");
-    // }
+  .post('/login', (req, res,next) => {
+    users.getUser(req.body.username, req.body.password)
+    .then((x)=> {
+    if(x){
+      res.status(200).send(x)
+    }else{
+      res.status(200).send({})
+    }})
+    .catch(next);
   })
-  .post('/', (req,res) => {
-    res.status(200).send(users.addUser(req.body.user));
+  .post('/', (req,res,next) => {
+    users.addUser(req.body.user)
+    .then((x)=>res.status(200).send(x))
+    .catch(next);
   })
-  .patch('/',(req,res) => {
-    res.status(200).send(users.editUser(req.body.user));
+  .patch('/',(req,res,next) => {
+    users.editUser(req.body.user)
+    .then((x)=>res.status(200).send(x))
+    .catch(next);
   })
-  .delete('/', (req,res) => {
-    res.status(200).send(users.deleteUser(req.body.user));
+  .delete('/', (req,res,next) => {
+    users.deleteUser(req.body.user)
+    .then((x)=>res.status(200).send(x))
+    .catch(next);
   })
 
   module.exports = app;

@@ -23,7 +23,7 @@ export async function api<T>(url: string, data: any = null, method?: string) {
 export function login(username: string, password: string) {
   let errMessage: string = "";
   getUser(username, password).then((user) => {
-    if (user) {
+    if (!(JSON.stringify(user)==='{}')) {
       session.user = user;
     } else {
       errMessage = "Invalid username or password";

@@ -1,25 +1,43 @@
-const data = require('../data/exercises.json');
+const { connect } = require('./mongo');
 
-function getExercises(){
-  return data.exercises;
+const COLLECTION_NAME = 'exercises';
+
+async function collection(){
+  const client = await connect();
+  return client.db('stick_to_fitness').collection(COLLECTION_NAME);
 }
-function getExercise(exercise_id){
-  return data.exercises.find((exercise) => exercise.exercise_id = exercise_id);
+
+async function getExercises(){
+  const db = await collection();
+  const data = await db.find().toArray();
+  return data;
 }
-function addExercise(paramExercise){
-  paramExercise.workout_id = data.exercises[data.exercises.length-1].exercise_id + 1;
-  data.exercises.push(paramExercise);
+async function getExercise(exercise_id){
+  const db = await collection();
+  const data = await db.findOne({exercise_id: exercise_id});
+  return data;
+}
+async function addExercise(paramExercise){
+  const db = await collection();
+  const id = await (await db.find().sort({exercise_id:-1}).limit(1).toArray()).map((u)=> u.exercise_id)[0];
+  if(paramExercise.user_id==0){
+    paramExercise.exercise_id = +id + 1;
+  }
+  const data = await db.insertOne(paramExercise);
   return paramExercise;
 }
-function editExercise(paramExercise){
-  const i = data.exercises.findIndex((Exercise) => Exercise.exercise_id === paramExercise.exercise_id);
-  data.exercises[i] = paramExercise;
-  return data.exercises[i];
+async function editExercise(paramExercise){
+  const db = await collection();
+  const data = await db.updateOne({exercise_id: paramExercise.exercise_id},{$set: {
+    exercise: paramExercise.exercise,
+    calorie_index: paramExercise.calorie_index
+  }});
+  return paramExercise;
 }
-function deleteExercise(paramExercise){
-  const i = data.exercises.findIndex((Exercise) => Exercise.exercise_id === paramExercise.exercise_id);
-  data.exercises.splice(i,1);
+async function deleteExercise(paramExercise){
+  const db = await collection();
+  const data = await db.deleteOne({exercise_id: paramExercise.exercise_id});
   return {};
 }
 
-module.exports = { getExercises, getExercise, addExercise, editExercise, deleteExercise};
+module.exports = { COLLECTION_NAME, collection, getExercises, getExercise, addExercise, editExercise, deleteExercise};

@@ -23,7 +23,7 @@ function onSubmit(e: any) {
     username.value = "";
     password.value = "";
     router.push("/account");
-  }
+  } 
 }
 </script>
 

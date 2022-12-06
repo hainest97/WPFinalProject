@@ -1,28 +1,48 @@
-const data = require('../data/workouts.json');
+const { connect } = require('./mongo');
 
-function getUserWorkouts(user_id){
-  return data.workouts.filter((workout) => workout.user_id === user_id);
+const COLLECTION_NAME = 'workouts';
+
+async function collection(){
+  const client = await connect();
+  return client.db('stick_to_fitness').collection(COLLECTION_NAME);
 }
-function getFriendsWorkouts(user_ids){
-  return data.workouts.filter((workout) => user_ids.includes(workout.user_id));
+async function getUserWorkouts(user_id){
+  const db = await collection();
+  const data = await db.find({user_id: user_id}).toArray();
+  return data;
 }
-function getWorkout(workout_id){
-  return data.workouts.find((workout) => workout.workout_id === workout_id);
+async function getFriendsWorkouts(user_ids){
+  const db = await collection();
+  const data = await db.find({user_id: {$in: user_ids} }).toArray();
+  return data;
 }
-function addWorkout(paramWorkout){
-  paramWorkout.workout_id = data.workouts[data.workouts.length-1].workout_id + 1;
-  data.workouts.push(paramWorkout);
+async function getWorkout(workout_id){
+  const db = await collection();
+  const data = await db.findOne({workout_id: workout_id});
+  return data;
+}
+async function addWorkout(paramWorkout){
+  const db = await collection();
+  const id = await (await db.find().sort({workout_id:-1}).limit(1).toArray()).map((u)=> u.workout_id)[0];
+  if(paramWorkout.workout_id==0){
+    paramWorkout.workout_id = +id + 1;
+  }
+  const data = await db.insertOne(paramWorkout);
   return paramWorkout;
 }
-function editWorkout(paramWorkout){
-  const i = data.workouts.findIndex((workout) => workout.workout_id === paramWorkout.workout_id);
-  data.workouts[i] = paramWorkout;
-  return data.workouts[i];
+async function editWorkout(paramWorkout){
+  const db = await collection();
+  const data = await db.updateOne({workout_id: paramWorkout.workout_id},{$set: {
+    exercise: paramWorkout.exercise,
+    time: paramWorkout.time,
+    calories: paramWorkout.calories
+  }});
+  return paramWorkout;
 }
-function deleteWorkout(paramWorkout){
-  const i = data.workouts.findIndex((workout) => workout.workout_id === paramWorkout.workout_id);
-  data.workouts.splice(i,1);
+async function deleteWorkout(paramWorkout){
+  const db = await collection();
+  const data = await db.deleteOne({workout_id: paramWorkout.workout_id});
   return {};
 }
 
-module.exports = {getUserWorkouts, getFriendsWorkouts, getWorkout, addWorkout, editWorkout, deleteWorkout}
+module.exports = {COLLECTION_NAME, collection, getUserWorkouts, getFriendsWorkouts, getWorkout, addWorkout, editWorkout, deleteWorkout}

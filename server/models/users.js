@@ -1,33 +1,63 @@
-const data = require('../data/users.json');
 
+const { connect } = require('./mongo');
+ 
+const COLLECTION_NAME = 'users';
 
-function getUsers(){
-  return data.users;
+async function collection(){
+  const client = await connect();
+  return client.db('stick_to_fitness').collection(COLLECTION_NAME);
 }
-function getFriends(ids){
-  return data.users.filter((user) => ids.includes(user.user_id));
+async function getUsers(){
+  const db = await collection();
+  const data = await db.find().toArray();
+  return data;
+}
+async function getFriends(ids){
+  const db = await collection();
+  const data = await db.find({user_id: {$in: ids}}).toArray()
+  return data;
  }
- function getUser(username, password){
-   return data.users.find((user)=> user.username === username && user.password === password);
+ async function getUser(username, password){
+  const db = await collection();
+  const data = await db.findOne({username: username, password: password});
+  return data;
  }
- function getUserById(id){
-  return data.users.find((user)=> user.user_id === id);
+ async function getUserById(id){
+  const db = await collection();
+  const data = await db.findOne({user_id: id});
+  return data;
  }
- function addUser(paramUser){
-  paramUser.workout_id = data.users[data.users.length-1].user_id + 1;
-   data.users.push(paramUser);
-   return paramUser;
+ async function addUser(paramUser){
+  const db = await collection();
+  const id = await (await db.find().sort({user_id:-1}).limit(1).toArray()).map((u)=> u.user_id)[0];
+  if(paramUser.user_id==0){
+    paramUser.user_id = +id + 1;
+  }
+  const data = await db.insertOne(paramUser);
+  return paramUser;
  }
- function editUser(paramUser){
-   const i = data.users.findIndex((user) => user.user_id === paramUser.user_id);
-   data.users[i] = paramUser;
-   return data.users[i];
+ async function editUser(paramUser){
+  const db = await collection();
+  const data = await db.updateOne({user_id: paramUser.user_id},{$set: 
+    {
+      firstName: paramUser.firstName,
+      lastName: paramUser.lastName,
+      username: paramUser.username,
+      password: paramUser.password,
+      isAdmin: paramUser.isAdmin,
+      sex: paramUser.sex,
+      height: paramUser.height,
+      weight: paramUser.weight,
+      age: paramUser.age
+    }
+  });
+  return paramUser;
  }
  
- function deleteUser(paramUser){
-   const i = data.users.findIndex((user) => user.user_id === paramUser.user_id);
-   data.users.splice(i,1);
-   return {};
+ async function deleteUser(paramUser){
+  const db = await collection();
+  const data = await db.deleteOne({user_id: paramUser.user_id});
+  return {};
  }
 
- module.exports = { getUsers, getFriends, getUser, getUserById, addUser, editUser, deleteUser};
+ module.exports = { COLLECTION_NAME, collection, getUsers, getFriends, getUser, getUserById, addUser, editUser, deleteUser};

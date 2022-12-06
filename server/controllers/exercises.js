@@ -4,20 +4,30 @@ const exercises = require('../models/exercises');
 const app = express.Router();
 
 app
-  .get('/',(req,res) => {
-    res.status(200).send(exercises.getExercises());
+  .get('/',(req,res,next) => {
+    exercises.getExercises()
+    .then(x=>res.status(200).send(x))
+    .catch(next);
   })
-  .get('/:exerciseId',(req,res) => {
-    res.status(200).send(exercises.getExercise(req.params.exerciseId))
+  .get('/:exerciseId',(req,res,next) => {
+    exercises.getExercise(req.params.exerciseId)
+    .then(x=>res.status(200).send(x))
+    .catch(next);
   })
-  .post('/',(req,res) => {
-    res.status(200).send(exercises.addExercise(req.body.exercise))
+  .post('/',(req,res,next) => {
+    exercises.addExercise(req.body.exercise)
+    .then(x=>res.status(200).send(x))
+    .catch(next);
   })
-  .patch('/',(req,res) => {
-    res.status(200).send(exercises.editExercise(req.body.exercise))
+  .patch('/',(req,res,next) => {
+    exercises.editExercise(req.body.exercise)
+    .then(x=>res.status(200).send(x))
+    .catch(next);
   })
-  .delete('/',(req,res) => {
-    res.status(200).send(exercises.deleteExercise(req.body.exercise))
+  .delete('/',(req,res,next) => {
+    exercises.deleteExercise(req.body.exercise)
+    .then(x=>res.status(200).send(x))
+    .catch(next);
   })
 
   module.exports = app;
