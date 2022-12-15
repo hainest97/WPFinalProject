@@ -16,6 +16,17 @@ app
     .then((y)=>res.status(200).send(y)))
     .catch(next);
   })
+  .post('/friends/search', (req,res,next) => {
+    users.searchUsers(req.body.name)
+    .then((x)=> {
+    if(x){
+      res.status(200).send(x)
+    }
+    else {
+      res.status(200).send({})
+    }})
+    .catch(next);
+  })
   .post('/login', (req, res,next) => {
     users.getUser(req.body.username, req.body.password)
     .then((x)=> {

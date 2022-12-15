@@ -13,6 +13,9 @@ export function getUsers(){
 export function getFriends(){
  return api<User[]>(`users/friends/${session.user?.user_id}`);
 }
+export function searchUsers(name: string){
+  return api<User>('users/friends/search',{name: name});
+}
 export function getUser(username: string , password: string){
   return api<User>('users/login',{username: username, password: password});
 }
